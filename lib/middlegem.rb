@@ -3,6 +3,7 @@
 require_relative 'middlegem/version'
 require_relative 'middlegem/middleware'
 require_relative 'middlegem/definition'
+require_relative 'middlegem/stack'
 
 # The namespace containing all modules in the middlegem gem.
 #
@@ -21,3 +22,8 @@ module Middlegem
   # @see https://ruby-doc.org/core-2.0.0/Exception.html
   class Error < StandardError; end
 end
+
+require_relative 'middlegem/invalid_middleware_error'
+require_relative 'middlegem/unpermitted_middleware_error'
+require_relative 'middlegem/invalid_definition_error'
+require_relative 'middlegem/invalid_middleware_output_error'
