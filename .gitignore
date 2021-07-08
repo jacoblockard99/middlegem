@@ -1,3 +1,5 @@
+# Default
+
 /.bundle/
 /.yardoc
 /_yardoc/
@@ -9,3 +11,7 @@
 
 # rspec failure tracking
 .rspec_status
+
+# Ignore Gemfile.lock, since this is a gem.
+
+Gemfile.lock
