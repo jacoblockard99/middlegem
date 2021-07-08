@@ -2,6 +2,7 @@
 
 require_relative 'middlegem/version'
 require_relative 'middlegem/middleware'
+require_relative 'middlegem/definition'
 
 # The namespace containing all modules in the middlegem gem.
 #
