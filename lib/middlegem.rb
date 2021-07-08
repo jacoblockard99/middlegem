@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'middlegem/version'
+require_relative 'middlegem/middleware'
 
 # The namespace containing all modules in the middlegem gem.
 #
