@@ -7,31 +7,35 @@ require 'support/test_no_defined_definition'
 
 RSpec.describe Middlegem::Definition do
   describe '.valid?' do
-    context 'given an object that responds to `defined?` and `sort`' do
-      subject { TestDefinition.new }
+    context 'when given an object that responds to `defined?` and `sort`' do
+      let(:definition) { TestDefinition.new }
+
       it 'returns true' do
-        expect(Middlegem::Definition.valid?(subject)).to eq true
+        expect(described_class.valid?(definition)).to eq true
       end
     end
 
-    context 'given an object that responds to `defined?`, but not `sort`' do
-      subject { TestNoSortDefinition.new }
+    context 'when given an object that responds to `defined?`, but not `sort`' do
+      let(:definition) { TestNoSortDefinition.new }
+
       it 'returns false' do
-        expect(Middlegem::Definition.valid?(subject)).to eq false
+        expect(described_class.valid?(definition)).to eq false
       end
     end
 
-    context 'given an object that responds to `sort`, but not `defined?`' do
-      subject { TestNoDefinedDefinition.new }
+    context 'when given an object that responds to `sort`, but not `defined?`' do
+      let(:definition) { TestNoDefinedDefinition.new }
+
       it 'returns false' do
-        expect(Middlegem::Definition.valid?(subject)).to eq false
+        expect(described_class.valid?(definition)).to eq false
       end
     end
 
-    context 'given an invalid Definition instance' do
-      subject { Middlegem::Definition.new }
+    context 'when given an invalid Definition instance' do
+      let(:definition) { described_class.new }
+
       it 'returns false' do
-        expect(Middlegem::Definition.valid?(subject)).to eq false
+        expect(described_class.valid?(definition)).to eq false
       end
     end
   end

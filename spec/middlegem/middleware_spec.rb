@@ -5,23 +5,26 @@ require 'spec_helper'
 RSpec.describe Middlegem::Middleware do
   describe '.valid?' do
     context 'with an object that does not implement `call`' do
-      subject { 'a random object' }
+      let(:middleware) { 'a random object' }
+
       it 'returns false' do
-        expect(Middlegem::Middleware.valid?(subject)).to eq false
+        expect(described_class.valid?(middleware)).to eq false
       end
     end
 
     context 'with an object that does implement `call`' do
-      subject { -> { 'a random string' } }
+      let(:middleware) { -> { 'a random string' } }
+
       it 'returns true' do
-        expect(Middlegem::Middleware.valid?(subject)).to eq true
+        expect(described_class.valid?(middleware)).to eq true
       end
     end
 
     context 'with a Middleware instance that does not implement `call`' do
-      subject { Middlegem::Middleware.new }
+      let(:middleware) { described_class.new }
+
       it 'returns false' do
-        expect(Middlegem::Middleware.valid?(subject)).to eq false
+        expect(described_class.valid?(middleware)).to eq false
       end
     end
   end
