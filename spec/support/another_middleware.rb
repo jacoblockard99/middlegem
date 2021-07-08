@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class TestMiddleware
+class AnotherMiddleware
   attr_accessor :num, :run, :priority
 
   def initialize(num, run, priority: 1)
@@ -11,6 +11,6 @@ class TestMiddleware
 
   def call(input)
     @run << @num
-    ["(#{input})"]
+    ["[#{input}]"]
   end
 end

@@ -4,6 +4,7 @@ require_relative 'middlegem/version'
 require_relative 'middlegem/middleware'
 require_relative 'middlegem/definition'
 require_relative 'middlegem/stack'
+require_relative 'middlegem/array_definition'
 
 # The namespace containing all modules in the middlegem gem.
 #
