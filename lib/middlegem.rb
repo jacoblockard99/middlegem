@@ -6,20 +6,21 @@ require_relative 'middlegem/definition'
 require_relative 'middlegem/stack'
 require_relative 'middlegem/array_definition'
 
-# The namespace containing all modules in the middlegem gem.
+# {Middlegem} is a namespace that contains all modules in the +middlegem+ gem.
 #
 # @author Jacob Lockard
 # @since 0.1.0
 module Middlegem
-  # A subclass of {StandardError} from which all custom errors in the middlegem gem are derived.
+  # {Error} is a subclass of {https://ruby-doc.org/core-2.5.0/StandardError.html StandardError}
+  # from which all custom errors in +middlegem+ are derived. One potential use for this class is
+  # to rescue all custom errors produced by +middlegem+. For example:
   #
-  # One potential reason to use this class is for rescuing all custom errors produced by
-  # middlegem. For example:
   #   begin
   #     # Do something risky with middlegem here...
   #   rescue Middlegem::Error
   #     # Catch any middlegem-specific error here...
   #   end
+  #
   # @see https://ruby-doc.org/core-2.0.0/Exception.html
   class Error < StandardError; end
 end

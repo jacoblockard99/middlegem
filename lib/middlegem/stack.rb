@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
 module Middlegem
-  # A class that represents a chain of middlewares, which, when called, can arbitrarily transform
-  # a given input. Most of the functionality middlegem provides lies in this class. Using
-  # {Middlegem::Stack} is simple: create a new instance with the desired definition, add
-  # whatever middlewares you want to use, and {#call} it.
+  # {Stack} is a class that represents a chain of middlewares, which, when called, can
+  # arbitrarily transform a given input. Most of the functionality provided by +middlegem+ lies
+  # in this class. Using {Stack} is simple: create a new instance with the desired definition,
+  # add whatever middlewares you want to use, and {#call} it.
   #
   # A very basic example of usage is:
+  #
   #   class LastNameMiddleware < Middlegem::Middleware
   #     def call(name)
-  #       "The Honorable #{name} Lockard"
+  #       "The Honorable #{name}"
   #     end
   #   end
   #
@@ -31,35 +32,42 @@ module Middlegem
   #   stack = Middlegem::Stack.new(Middlegem::ArrayDefinition.new(definitions))
   #   stack.middlewares += [EmailStringMiddleware.new('mail@test.com'), LastNameMiddleware.new]
   #
-  #   stack.call('Jacob') # => "mail@test.com <The Honorable Jacob Lockard>"
+  #   stack.call('Jacob') # => "mail@test.com <The Honorable Jacob>"
+  #
   # Notice that, even though the +EmailStringMiddleware+ was added before the
-  # +LastNameMiddleware+, the +EmailStringMiddleware+ was still run first, since it was defined
-  # first. That is the main premise of middlegem---rather than providing extensive methods to
-  # insert middleware in a specific place along the chain, middlegem simply allows you to define
-  # the order explicitly.
+  # +LastNameMiddleware+, the +LastNameMiddleware+ was still run first since it was defined
+  # first. That is a core principle of +middlegem+---rather than providing extensive methods to
+  # insert middleware in a specific place along the chain, +middlegem+ allows you to define
+  # the order explicitly. Also note that there are a variety of ways that you could specify the
+  # middleware order by extending {Definition}.
   #
   # @author Jacob Lockard
   # @since 0.1.0
+  # @see Middleware
+  # @see Definition
+  # @see ArrayDefinition
   class Stack
-    # The array of middlewares represented by this {Middlegem::Stack}. You can insert middlewares
+    # An array containing the middlewares represented by this {Stack}. You can insert middlewares
     # in any way you like by accessing this attribute directly and using ruby's built-in array
     # methods. If desired, you can even assign a new array to it. All middlewares will be
     # validated before being run. To be run, a middleware must be *valid* as defined by
-    # {Middlegem::Middleware.valid?} and it must be *defined* according to the
-    # {Middlegem::Definition} instance contained in {#definition}.
+    # {Middleware.valid?} and it must be *defined* according to the {Definition} instance
+    # in {#definition}.
     # @return [Array<Object>] the middlewares contained in this stack.
     attr_accessor :middlewares
 
-    # The {Middlegem::Definition} used to determine what middlewares are permitted in this stack
-    # and in what order they should be run.
-    # @return [Middlegem::Definition} the middleware definition of this stack.
+    # The {Definition} used to determine what middlewares are permitted in this stack
+    # and in what order they should be run. Note that this attribute may be any object that is a
+    # valid definition according to {Definition.valid?}.
+    # @return [Definition] the middleware definition of this middleware stack.
     attr_reader :definition
 
-    # Creates a new instance of {Middlegem::Stack} with the given middleware definition and,
+    # Creates a new instance of {Stack} with the given middleware definition and,
     # optionally, an array of middlewares. Note that middlewares will be validated, not
     # immediately, but before being run.
-    # @param definition [Middlegem::Definition] the middleware definition to use to determine
-    #   what middleware to permit in this stack and in what order to run them.
+    # @param definition [Definition] the middleware definition to use to determine
+    #   what middleware to permit in this stack and in what order to run them. May be any object
+    #   that is a valid definition according to {Definition.valid?}.
     # @param middlwares [Array<Object>] an optional array of initial middlewares in this stack.
     def initialize(definition, middlewares: [])
       unless Definition.valid?(definition)
@@ -71,19 +79,20 @@ module Middlegem
     end
 
     # Transforms the given input by calling all the middlewares in this stack, as defined by the
-    # middleware {#definition}. Note that arguments are already splatted---you should not try to
-    # pass a single array of arguments as the only parameter, unless you actually want to
-    # transform a single array. Also, as noted in {Middleware#call}, middleware _should_ return
-    # an array of arguments, which will be splatted when passed to {Middleware#call}.
+    # middleware {#definition}. Note that, as mentioned in {Middleware}, middlewares in
+    # +middlegem+ transform argument lists. Thus, the arguments are already splatted---there is
+    # no need to pass a single array of arguments as the only parameter, unless you actually want
+    # to transform just a single array. Also, middleware *must* return an array of arguments,
+    # which will be splatted when passed to {Middleware#call}.
     #
-    # Midlewares are validated before are run or sorted. If a middleware is encountered that
+    # Midlewares are validated before being run or sorted. If a middleware is encountered that
     # is either invalid or unpermitted, an appropriate error will be raised.
     #
     # @param args [Array<Object>] the array of input arguments.
-    # @return the output of the last middleware in the chain.
-    # @raise [InvalidMiddlewareError] when one of the middleware in {#middlewares} is not valid,
-    #   as defined in {Middlegem::Middleware.valid?}.
-    # @raise [UnpermittedMiddlewareError] when one of the middleware in {#middlewares} has not
+    # @return [Array<Object>] the output of the last middleware in the chain.
+    # @raise [InvalidMiddlewareError] when one of the middlewares in {#middlewares} is not valid,
+    #   as defined by {Middleware.valid?}.
+    # @raise [UnpermittedMiddlewareError] when one of the middlewares in {#middlewares} has not
     #   been defined, and is thus not permitted, according to the {Definition} instance in
     #   {#definition}.
     def call(*args)

@@ -12,7 +12,7 @@ RSpec.describe Middlegem::ArrayDefinition do
       AnotherMiddleware
     ]
   end
-  let(:resolver) { ->(*ties) { ties.sort_by(&:priority) } }
+  let(:resolver) { ->(ties) { ties.sort_by(&:priority) } }
   let(:definition) { described_class.new(definition_list, resolver: resolver) }
 
   describe '#defined?' do

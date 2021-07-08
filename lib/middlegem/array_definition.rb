@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 module Middlegem
-  # An implementation of {Definition} that allows middlewares to be defined and ordered by their
-  # classes in an array. For example, it can be used like this:
+  # {ArrayDefinition} is an implementation of {Definition} that allows middlewares to be
+  # explicitly defined and ordered by class in an array. A basic example of usage is:
+  #
   #   definition = Middlegem::ArrayDefinition.new([
   #     MiddlewareOne,   # appends '1'
   #     MiddlewareTwo,   # appends '2'
@@ -17,22 +18,26 @@ module Middlegem
   #     MiddlewareTwo.new
   #   ])
   #
-  #   stack.call('hello') # => 'hello123.'
-  # Notice that the middleware are run in the order specified by the definitions array.
+  #   stack.call('hello') # => ['hello123.']
   #
-  # If two or more middlewares are encountered with the same class, they will be left in the same
-  # order they were added. This behavior can be customized by passing a tie resolver to the
-  # constructor. For example:
+  # Notice that the middlewares are called in the order they are specified in the definition
+  # array.
+  #
+  # If two or more middlewares are encountered that have the same class, they will be left in the
+  # order they were added. This behavior can be overriden by setting a tie resolver. The
+  # following code, for example, raises an error when  multiple +MiddlewareFinal+ middlewares
+  # are encountered:
+  #
   #   middlewares = [
-  #     MiddlewareOne,   # appends '1'
-  #     MiddlewareTwo,   # appends '2'
-  #     MiddlewareThree, # appends '3'
-  #     MiddlewareFinal  # appends a given character
+  #     MiddlewareOne,
+  #     MiddlewareTwo,
+  #     MiddlewareThree,
+  #     MiddlewareFinal
   #   ]
   #
-  #   tie_resolver = proc do |*ties|
-  #     # Assuming that MiddlewareFinal has a #character method.
-  #     ties.sort_by(&:character)
+  #   tie_resolver = proc do |ties|
+  #     raise "Can't run multiple MiddlewareFinals!" if ties.first.is_a? MiddlewareFinal
+  #     ties
   #   end
   #
   #   definition = Middlegem::ArrayDefinition.new(middlewares, resolver: tie_resolver)
@@ -40,47 +45,48 @@ module Middlegem
   #   stack = Middlegem::Stack.new(definition, middlewares: [
   #     MiddlewareTwo.new,
   #     MiddlewareOne.new,
-  #     MiddlewareFinal.new('a'),
+  #     MiddlewareFinal.new,
   #     MiddlewareThree.new,
-  #     MiddlewareFinal.new('c'),
-  #     MiddlewareFinal.new('b')
+  #     MiddlewareFinal.new
   #   ])
   #
-  #   stack.call('hello') # => 'hello123abc'
-  # Notice how the MiddlewareFinal middlewares are sorted by the resolver since they have the
-  # same class. You should be careful with this however! Remember that the resolver will be run
-  # for _any_ ties. You really should include this sort of check:
-  #   tie_resolver = proc do |*ties|
-  #     case ties
-  #     when MiddlewareFinal
-  #       ties.sort_by(&:character)
-  #     when ...
-  #       # Etc.
-  #     else
-  #       ties
-  #     end
-  #   end
-  # In general, except for very specific use cases, if you have to use a resolver, you should
-  # probably just build your own {Definition} class. The {ArrayDefinition} class is meant almost
-  # exclusively for defining middlewares according to their classes.
+  #   stack.call('hello') # => RuntimeError (Can't run multiple MiddlewareFinals!)
+  #
+  # When the two +MiddlewareFinal+ instances are encountered, the tie resolver is run, which
+  # raises the error.
+  #
+  # Of course, this is only scratching the surface of what is possible with
+  # a custom tie resolver. You might, for example, simply skip other instances of
+  # +MiddlewareFinal+, rather than raising an error. A word of caution is in order, however!
+  # It is not recommended to try anything too complicated with the tie resolver because it is run
+  # for <em>all ties whatsoever</em>. That means that, while you could technically try to sort
+  # middlewares with the same class based on some other factor---there is even an example
+  # in +spec/middlegem/array_definition_spec.rb+---it potentially results in long +if/else+ or
+  # +case/when+ constructions because each type must be dealt with separately. Use at your own risk!
+  #
+  # In general, if you need to use a tie resolver for anything but the most basic of tasks, you
+  # should probably just create your own {Definition} implementation with the required
+  # functionality. {ArrayDefinition} is intended primarily for defining middlewares according to
+  # their classes and nothing more.
   #
   # @author Jacob Lockard
   # @since 0.1.0
+  # @see Definition
   class ArrayDefinition < Definition
-    # The ordered array of classes defined by this {ArrayDefinition}. Middlewares will only be
-    # permitted if their class is in this array, and middlewares will be run in the order
-    # specified in this array.
-    # @return [Array<Class>] the ordered array of defined classes.
+    # An array of the middleware classes defined by this {ArrayDefinition}. Middlewares will only
+    # be permitted if their class is in this array will be run in the order specified here.
+    # @return [Array<Class>] the array of defined classes.
     attr_accessor :defined_classes
 
     # The callable object to use to break ties when sorting middlewares. When multiple
-    # middlewares of the same type are encountered, {#sort} will call this object with the
-    # array of tied middlewares. The resolver should sort and return the array as appropriate.
+    # middlewares of the same type are encountered, this object will be called with an
+    # array of all tied middlewares. The resolver should sort and return the array as
+    # appropriate.
     # @return [#call] the middleware tie resolver.
     attr_reader :resolver
 
     # Creates a new instance of {ArrayDefinition} with the given array of defined classes and,
-    # optionally, a callable obejct to be used to resolve sorting ties.
+    # optionally, a custom tie resolver.
     # @param defined_classes [Object<Class>] an ordered array of classes to be defined by this
     #   {ArrayDefinition} (see {#defined_classes}).
     # @param resolver [#call, nil] a callable object to use when middlewares of the same class
@@ -92,12 +98,13 @@ module Middlegem
 
       @defined_classes = defined_classes
       @resolver = resolver
+
       super()
     end
 
     # Determines whether the given middleware is defined according to this {ArrayDefinition} by
     # checking whether its class is contained in the list of defined classes
-    # ({#defined_classes}).
+    # (i.e. {#defined_classes}).
     # @param middleware [Object] the middleware to check.
     # @return [bool] whether the middleware is defined.
     def defined?(middleware)
@@ -109,13 +116,13 @@ module Middlegem
     # If multiple middlewares of the same type are encountered, they will be resolved with the
     # {#resolver}.
     def sort(middlewares)
-      defined_classes.map { |c| resolver.call(*matches(middlewares, c)) }.flatten
+      defined_classes.map { |c| resolver.call(matches(middlewares, c)) }.flatten
     end
 
     private
 
     # Gets all the middlewares in the given array whose class is the given class.
-    # @param middlewares [Array<Object>] the middlewares to search.
+    # @param middlewares [Array<Object>] the array of middlewares to search.
     # @param klass [Class] the class to search for.
     # @return [Array<Object>] the matched middlewares.
     def matches(middlewares, klass)
