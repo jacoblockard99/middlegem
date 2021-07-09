@@ -3,6 +3,7 @@
 require 'spec_helper'
 require 'support/open_definition'
 require 'support/test_middleware'
+require 'support/another_middleware'
 require 'support/undefined_middleware'
 require 'support/non_array_returning_middleware'
 
@@ -14,7 +15,7 @@ RSpec.describe Middlegem::Stack do
     [
       TestMiddleware.new(1, run),
       TestMiddleware.new(2, run),
-      TestMiddleware.new(3, run)
+      AnotherMiddleware.new(3, run)
     ]
   end
   let(:invalid_middleware) { Middlegem::Middleware.new }
@@ -75,7 +76,7 @@ RSpec.describe Middlegem::Stack do
 
     context 'with valid middlewares' do
       it 'produces the correct output' do
-        expect(call).to eq ['(((input)))']
+        expect(call).to eq ['(([input]))']
       end
     end
 
