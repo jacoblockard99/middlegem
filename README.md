@@ -1,5 +1,13 @@
 # Middlegem
 
+[![Build Status](https://travis-ci.com/jacoblockard99/middlegem.svg?branch=master)](https://travis-ci.com/jacoblockard99/middlegem)
+
+[![Inline docs](http://inch-ci.org/github/jacoblockard99/middlegem.svg?branch=master)](http://inch-ci.org/github/jacoblockard99/middlegem)
+
+[![Maintainability](https://api.codeclimate.com/v1/badges/b43ed85211cb562678bb/maintainability)](https://codeclimate.com/github/jacoblockard99/middlegem/maintainability)
+
+[![Test Coverage](https://api.codeclimate.com/v1/badges/b43ed85211cb562678bb/test_coverage)](https://codeclimate.com/github/jacoblockard99/middlegem/test_coverage)
+
 `middlegem` is a Ruby gem that provides one-way middleware chain functionality. It aims to be simple and reliable. It might be a good fit for you if:
   - **You want simplicity and reliability.**
   - **You don't need two-way middleware.** `middlegem` does not allow processing both the "request" and the "response", for example. For that kind of functionality, I would recommend checking out [ruby-middleware](https://github.com/Ibsciss/ruby-middleware).
