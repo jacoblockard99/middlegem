@@ -2,15 +2,14 @@
 
 `middlegem` is a Ruby gem that provides one-way middleware chain functionality. It aims to be simple and reliable. `middlegem` might be a good fit for you if:
   - **You want simplicity and reliability.**
-  - **You don't need two-way middleware.** `middlegem` does not allow processing both the "request" and the "respond", for example. For that kind of functionality, I would recommend checking out [ruby-middleware](https://github.com/Ibsciss/ruby-middleware).
-  - **You want to explicitly define the order of your middlwares.** `middlegem` encourages you todefine your middlewares and the order they should run in explicitly and separately.
+  - **You don't need two-way middleware.** `middlegem` does not allow processing both the "request" and the "response", for example. For that kind of functionality, I would recommend checking out [ruby-middleware](https://github.com/Ibsciss/ruby-middleware).
+  - **You want to explicitly define the order of your middlwares.** `middlegem` encourages you to explicitly define your middlewares and the order they should run.
 
-## Table of Contents
+## Notes
 
-1. Installation
-2. Usage
-3. Development/Contributing
-4. License
+- [API Docs](https://rdoc.info/github/jacoblockard99/middlegem)—thorough YARD documentation for every module, class, attribute, and method in `middlegem`.
+- [CHANGELOG.md](CHANGELOG.md)—a list of changes made to the gem in each version.
+- [Releases](https://github.com/jacoblockard99/middlegem/releases)—the GitHub releases of the gem.
 
 ## Installation
 
@@ -39,13 +38,14 @@ Or you may install it manually with:
 Middlewares in `middlegem` are designed to operate on *argument lists*. This has two consequences:
   1. A middleware's `call` method should simply accept the arguments it expects to transform—no need to accept and "arguments array" and try to parse it!
   2. The `call` method **must** return an array. Because it is transforming an argument list, it must also return an argument list, i.e. an array.
+
 While you can certainly use `middlegem` with a single input, always remember to return an array in your middleware `call` methods.
 
 **Midleware definitions** are a key difference in `middlegem` from other middleware gems. They strive to solve a common problem with middlewares. Imagine, for example, that you have two middlewares: one that converts an input string to an integer, and another that multiplies that number by 10. Obviously, the conversion middleware must run first, or an error will occur. With a simple example like this, it is trivial to simply insert the middlewares in the right place at the right time. But as you begin adding more middlewares and—worse—begin allowing *custom* middlewares to be defined, things quickly become unmanageable! It becomes impossible to know exactly where a given middleware should be inserted in a middleware stack.
 
-This is where middleware definitions come in. A middleware definition is essentially an object that determines 1) what middlewares are permitted in a middleware stack, and 2) in what order those middlewares should be run. Any object that implements a `defined?` method and a `sort` method can be valid middleware definitions, though by convention middleware definitions derive from `Middlegem::Definition`. The only middleware definition that currently ships with `middlegem` is `Middlegem::ArrayDefinition`, which allows you to define an ordered list of permitted middleware classes.
+This is where middleware definitions come in. A middleware definition is essentially an object that determines 1) what middlewares are permitted in a middleware stack, and 2) in what order those middlewares should be run. Any object that implements a `defined?` method and a `sort` method can be avalid middleware definition, though by convention middleware definitions derive from `Middlegem::Definition`. The only middleware definition that currently ships with `middlegem` is `Middlegem::ArrayDefinition`, which allows you to define an ordered list of permitted middleware classes.
 
-Finally, **middleware stacks**, represented by `Middlegem::Stack`, are chains of middlewares. Every `Middlegem::Stack` also has a single middleware definition that determines how to run its middlewares. Note that `Middlegem::Stack` has no fancy methods for inserting middlewares at specific locations—it relies on Ruby's built-in methods. Instead, it allows ordering to be determined by the middleware definition.
+Finally, **middleware stacks**, represented by `Middlegem::Stack`, are chains of middlewares. Every `Middlegem::Stack` has a single middleware definition that determines how to run its middlewares. Note that `Middlegem::Stack` has no fancy methods for inserting middlewares at specific locations—it relies on Ruby's built-in methods. Instead, it allows ordering to be determined by the middleware definition.
 
 ## Usage
 
@@ -157,7 +157,7 @@ Obviously, the order of even individual `AppendMiddleware`s matters. "TAB" is a 
 ```ruby
 DEFINITION = Middlegem::ArrayDefinition.new([AppendMiddleware], resolver: ->(ties) {
   if ties.count > 1 && ties.first.is_a? AppendMiddleware
-    ties.sort_by(&:appended)
+    return ties.sort_by(&:appended)
   end
   ties
 })
