@@ -15,9 +15,7 @@ Gem::Specification.new do |spec|
   DESC
   spec.homepage      = 'https://github.com/jacoblockard99/middlegem'
   spec.license       = 'MIT'
-  spec.required_ruby_version = Gem::Requirement.new('>= 2.4.0')
-
-  spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
+  spec.required_ruby_version = Gem::Requirement.new('>= 2.5.0')
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/jacoblockard99/middlegem'
@@ -31,7 +29,9 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_development_dependency 'rubocop-rspec'
+  spec.add_development_dependency 'rspec', '~> 3.0'
+  spec.add_development_dependency 'rubocop', '~> 1.18'
+  spec.add_development_dependency 'rubocop-rspec', '~> 2.4'
   spec.add_development_dependency 'simplecov', '0.17'
 
   # Uncomment to register a new dependency of your gem
