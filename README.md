@@ -1,5 +1,6 @@
 # Middlegem
 
+[![Gem Version](https://badge.fury.io/rb/middlegem.svg)](https://badge.fury.io/rb/middlegem)
 [![Build Status](https://travis-ci.com/jacoblockard99/middlegem.svg?branch=master)](https://travis-ci.com/jacoblockard99/middlegem)
 [![Inline docs](http://inch-ci.org/github/jacoblockard99/middlegem.svg?branch=master)](http://inch-ci.org/github/jacoblockard99/middlegem)
 [![Maintainability](https://api.codeclimate.com/v1/badges/b43ed85211cb562678bb/maintainability)](https://codeclimate.com/github/jacoblockard99/middlegem/maintainability)
