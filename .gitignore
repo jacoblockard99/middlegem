@@ -19,3 +19,7 @@ Gemfile.lock
 # Ignore byebug history
 
 .byebug_history
+
+# Ignore built .gem s
+
+*.gem
