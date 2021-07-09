@@ -1,15 +1,15 @@
 # Middlegem
 
-`middlegem` is a Ruby gem that provides one-way middleware chain functionality. It aims to be simple and reliable. `middlegem` might be a good fit for you if:
+`middlegem` is a Ruby gem that provides one-way middleware chain functionality. It aims to be simple and reliable. It might be a good fit for you if:
   - **You want simplicity and reliability.**
   - **You don't need two-way middleware.** `middlegem` does not allow processing both the "request" and the "response", for example. For that kind of functionality, I would recommend checking out [ruby-middleware](https://github.com/Ibsciss/ruby-middleware).
   - **You want to explicitly define the order of your middlwares.** `middlegem` encourages you to explicitly define your middlewares and the order they should run.
 
-## Notes
+## Links
 
-- [API Docs](https://rdoc.info/github/jacoblockard99/middlegem)—thorough YARD documentation for every module, class, attribute, and method in `middlegem`.
-- [CHANGELOG.md](CHANGELOG.md)—a list of changes made to the gem in each version.
-- [Releases](https://github.com/jacoblockard99/middlegem/releases)—the GitHub releases of the gem.
+- [API Docs](https://rdoc.info/github/jacoblockard99/middlegem)
+- [CHANGELOG.md](CHANGELOG.md)
+- [Releases](https://github.com/jacoblockard99/middlegem/releases)
 
 ## Installation
 
