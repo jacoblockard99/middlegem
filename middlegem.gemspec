@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_development_dependency 'rubocop-rspec'
-  spec.add_development_dependency 'simplecov'
+  spec.add_development_dependency 'simplecov', '0.17'
 
   # Uncomment to register a new dependency of your gem
   # spec.add_dependency "example-gem", "~> 1.0"
