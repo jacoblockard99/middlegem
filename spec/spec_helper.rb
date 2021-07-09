@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 require 'middlegem'
+require 'simplecov'
+
+SimpleCov.start
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
