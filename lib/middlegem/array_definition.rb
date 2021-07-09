@@ -115,6 +115,8 @@ module Middlegem
     # sorted according to the order in which their classes are specified in {#defined_classes}.
     # If multiple middlewares of the same type are encountered, they will be resolved with the
     # {#resolver}.
+    # @param middlewares [Array<Object>] the middlewares to sort.
+    # @return [Array<Object>] the sorted middlewares.
     def sort(middlewares)
       defined_classes.map { |c| resolver.call(matches(middlewares, c)) }.flatten
     end
