@@ -9,7 +9,5 @@ class OfficialMiddleware < Middlegem::Middleware
     super()
   end
 
-  def call(input)
-    "Official: #{input}!"
-  end
+  def call(input); end
 end
