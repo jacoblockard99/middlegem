@@ -185,6 +185,22 @@ While this works, the limitations quickly become obvious. Mainly, it requires a 
 
 For more complicated scenarios, it is instead recommended that you create your own implementation of `Middlegem::Definition` that allows ordering the middlewares in some other way. Perhaps you could set "priorities" on the middlewares, or organize them into "groups"—the possibilities with this method are limitless!
 
+### Class Evaluation
+
+There may be times when you wish to have more control over how exactly `ArrayDefinition` determines the class of a middleware. The default implementation uses `instance_of?`. Perhaps you want to use `is_a?`, or maybe you have an entirely different method for getting the "class" of the middleware. In any case, this can be easily done by overriding `ArrayDefinition#matches_class?`. For example:
+
+```ruby
+class CustomArrayDefinition < Middlegem::ArrayDefinition do
+  protected
+
+  def matches_class?(middleware, klass)
+    middleware.is_a? klass
+  end
+end
+```
+
+This would cause all subclasses of a base class to be defined when the base class is.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
