@@ -130,6 +130,7 @@ module Middlegem
     # @param middleware [Object] the middleware to check.
     # @param klass [Class] the class against which to check the middleware.
     # @return [Boolean] whether the given middleware has the given class.
+    # @since 0.2.0
     def matches_class?(middleware, klass)
       middleware.instance_of? klass
     end
