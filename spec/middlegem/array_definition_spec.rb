@@ -4,6 +4,8 @@ require 'spec_helper'
 require 'support/test_middleware'
 require 'support/another_middleware'
 require 'support/blocked_middleware'
+require 'support/official_middleware'
+require 'support/overriden_array_definition'
 
 RSpec.describe Middlegem::ArrayDefinition do
   let(:definition_list) do
@@ -25,6 +27,21 @@ RSpec.describe Middlegem::ArrayDefinition do
     context 'when given an object whose class is not in the definition list' do
       it 'returns false' do
         expect(definition.defined?(BlockedMiddleware.new)).to eq false
+      end
+    end
+
+    context 'when matches_class? is overriden' do
+      let(:definition_list) do
+        [
+          Middlegem::Middleware,
+          TestMiddleware,
+          AnotherMiddleware
+        ]
+      end
+      let(:definition) { OverridenArrayDefinition.new(definition_list) }
+
+      it 'respects it' do
+        expect(definition.defined?(OfficialMiddleware.new(5))).to eq true
       end
     end
   end
@@ -75,6 +92,28 @@ RSpec.describe Middlegem::ArrayDefinition do
 
       it 'correctly utilizes it' do
         expect(sorted.map(&:num)).to eq [1, 4, 2, 5, 3]
+      end
+    end
+
+    context 'when matches_class? is overriden' do
+      let(:definition_list) do
+        [
+          Middlegem::Middleware,
+          TestMiddleware,
+          AnotherMiddleware
+        ]
+      end
+      let(:middlewares) do
+        [
+          AnotherMiddleware.new(1, [], priority: 2),
+          OfficialMiddleware.new(2),
+          TestMiddleware.new(3, [], priority: 1)
+        ]
+      end
+      let(:definition) { OverridenArrayDefinition.new(definition_list) }
+
+      it 'respects it' do
+        expect(sorted.map(&:num)).to eq [2, 3, 1]
       end
     end
   end

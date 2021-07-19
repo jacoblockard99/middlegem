@@ -108,7 +108,7 @@ module Middlegem
     # @param middleware [Object] the middleware to check.
     # @return [bool] whether the middleware is defined.
     def defined?(middleware)
-      defined_classes.include?(middleware.class)
+      defined_classes.any? { |c| matches_class?(middleware, c) }
     end
 
     # Sorts the given array of middlewares according to this {ArrayDefinition}. Middlewares are
@@ -121,6 +121,19 @@ module Middlegem
       defined_classes.map { |c| resolver.call(matches(middlewares, c)) }.flatten
     end
 
+    protected
+
+    # Should determine whether the given middleware's evaluated class is equal to the given one.
+    # The default implementation naturally just uses +instance_of?+, but you are free to
+    # override this method for other situations. You may want is use +is_a?+ instead, for
+    # example, or perhaps a middleware's "class" is based on some other criterion.
+    # @param middleware [Object] the middleware to check.
+    # @param klass [Class] the class against which to check the middleware.
+    # @return [Boolean] whether the given middleware has the given class.
+    def matches_class?(middleware, klass)
+      middleware.instance_of? klass
+    end
+
     private
 
     # Gets all the middlewares in the given array whose class is the given class.
@@ -128,7 +141,7 @@ module Middlegem
     # @param klass [Class] the class to search for.
     # @return [Array<Object>] the matched middlewares.
     def matches(middlewares, klass)
-      middlewares.select { |m| m.instance_of?(klass) }
+      middlewares.select { |m| matches_class?(m, klass) }
     end
   end
 end
